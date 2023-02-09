@@ -1,5 +1,22 @@
 version: "3.8"
 services:
+  snapshot-service:
+    image: snapshot-service
+    restart: unless-stopped
+    depends_on:
+      - sql-server
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_JWT_SECRET=smorgasborg
+      - ASPNETCORE_DB_CONNECTION_STRING=Data Source=sql-server;Database=SnapshotService;User ID=sa;Password=Ua381*@pnG7%;TrustServerCertificate = true
+    expose: 
+      - 80
+    ports:
+      - 5005:80
+    container_name: snapshot_service
+    build:
+      context: ./SnapshotService
+      dockerfile: Dockerfile
   auth-service:
     image: auth-service
     restart: unless-stopped
