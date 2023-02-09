@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+  auth-service:
+    image: auth-service
+    restart: unless-stopped
+    depends_on:
+      - sql-server
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_JWT_SECRET=smorgasborg
+      - ASPNETCORE_DB_CONNECTION_STRING=Data Source=sql-server;Database=AuthenticationService;User ID=sa;Password=Ua381*@pnG7%;TrustServerCertificate = true
+    expose: 
+      - 80
+    ports:
+      - 5004:80
+    container_name: auth_service
+    build:
+      context: ./AccountService
+      dockerfile: Dockerfile
+
+  mongo-express:
+    container_name: BUCKET_Mongo_Explorer
+    image: mongo-express
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: fwTR8qv9
+      ME_CONFIG_MONGODB_URL: mongodb://root:fwTR8qv9@BUCKET_Mongo_database:27017/
+  
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    container_name: BUCKET_Mongo_database
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: fwTR8qv9
+    expose:
+      - 27015
+    ports:
+      - "27015:27017"
+  
+  sql-server:
+    image: mcr.microsoft.com/mssql/server
+    restart: unless-stopped
+    container_name: BUCKET_SQL_database
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Ua381*@pnG7%"
+    expose:
+      - 1421
+    ports:
+      - "1421:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+volumes:
+  sql-data:
